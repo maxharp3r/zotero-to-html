@@ -3,10 +3,10 @@ include .env.local
 
 .PHONY: all clean FORCE pip test formatonly deploy
 
-all: out/grouplens-bib.html
+all: $(ZTH_HTML_FILE)
 
-$(VERSION_FILE):
-	echo 0 > $(VERSION_FILE)
+$(ZTH_VERSION_FILE):
+	echo 0 > $(ZTH_VERSION_FILE)
 
 out:
 	mkdir -p out
@@ -14,13 +14,13 @@ out:
 # always run
 FORCE:
 
-out/grouplens-bib.json: FORCE out $(VERSION_FILE)
+$(ZTH_JSON_FILE): FORCE out $(ZTH_VERSION_FILE)
 	./download_bib.py --out=$@
 
-out/grouplens-bib.html: out/grouplens-bib.json
-	cat out/grouplens-bib.json | ./bib2html.py --out=$@
+$(ZTH_HTML_FILE): $(ZTH_JSON_FILE)
+	cat $(ZTH_JSON_FILE) | ./bib2html.py --out=$@
 	# deploy it
-	cp out/grouplens-bib.html ../../wp-content/themes/roots/templates/gl-publications-generated.php
+	cp $(ZTH_HTML_FILE) $(ZTH_DEPLOY_TARGET)
 
 test:
 	python -m doctest download_bib.py
@@ -29,7 +29,7 @@ pip:
 	pip install -r requirements.txt
 
 clean:
-	rm -rf out
+	rm -rf $(ZTH_OUT_DIR)
 
 
 # development tasks

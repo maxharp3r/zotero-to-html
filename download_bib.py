@@ -33,14 +33,14 @@ LINK_START_REGEX = re.compile(r"start=(\d+)")
 
 
 def _write_current_version(version_id):
-    with open(os.getenv("VERSION_FILE"), "w") as version_file:
+    with open(os.getenv("ZTH_VERSION_FILE"), "w") as version_file:
         version_file.write(str(version_id))
 
 
 def _read_current_version():
     ver = 0
     try:
-        with open(os.getenv("VERSION_FILE"), "r") as version_file:
+        with open(os.getenv("ZTH_VERSION_FILE"), "r") as version_file:
             ver = int(version_file.read())
     except IOError:
         pass
@@ -68,24 +68,21 @@ def _get_next_start(links_header):
 
 def get_bib_from_zotero(min_version=0, offset=0):
     """fetch bibliography as csljson, returns the next offset or None if we're done"""
-    url = 'https://api.zotero.org/%s/items' % os.environ["ZOTERO_SEARCH_PREFIX_URI"]
+    url = "https://api.zotero.org/%s/items" % os.environ["ZTH_SEARCH_PREFIX_URI"]
     url_params = {
-        'key': os.getenv("ZOTERO_KEY"),
-        'v': 3,
-        'sort': 'date',
-        'tag': os.getenv("ZOTERO_SEARCH_TAG"),
-        'format': 'json',
-        'include': 'bib,csljson',
+        "key": os.getenv("ZTH_API_KEY"),
+        "v": 3,
+        "sort": "date",
+        "tag": os.getenv("ZTH_SEARCH_TAG"),
+        "format": "json",
+        "include": "bib,csljson",
         # see https://www.zotero.org/styles/ for options
-        'style': 'acm-sigchi-proceedings',
-        'start': offset,
-        'limit': 100
+        "style": os.getenv("ZTH_CITEPROC_STYLE", "acm-sigchi-proceedings"),
+        "start": offset,
+        "limit": 100
     }
-    # tag =
-    # if tag:
-    #     url_params['tag'] = tag
 
-    url_headers = {'If-Modified-Since-Version': str(min_version)}
+    url_headers = {"If-Modified-Since-Version": str(min_version)}
     r = requests.get(url, params=url_params, headers=url_headers)
 
     if r.status_code == 304:
@@ -95,10 +92,10 @@ def get_bib_from_zotero(min_version=0, offset=0):
         parsed_response = None
     else:
         if offset == 0:
-            new_version = r.headers['Last-Modified-Version']
+            new_version = r.headers["Last-Modified-Version"]
             logger.info("downloading new version of bibliography. new version: %s" % new_version)
             _write_current_version(new_version)
-        next_start = _get_next_start(r.headers['Link'])
+        next_start = _get_next_start(r.headers["Link"])
         parsed_response = r.json()
 
     return next_start, parsed_response
@@ -127,9 +124,9 @@ def main():
     exit(0)
 
 
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='download grouplens bibliography from zotero into citeproc_json file.')
-    parser.add_argument('-o', '--out', dest='outfile', help='output file name')
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="download grouplens bibliography from zotero into citeproc_json file.")
+    parser.add_argument("-o", "--out", dest="outfile", help="output file name")
     args = parser.parse_args()
 
     # validate args
