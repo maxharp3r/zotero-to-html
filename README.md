@@ -14,6 +14,7 @@ scale to extremely large bibliographies, especially those that are changed often
 
 * python 2.7.x (not tested on python 3)
 * gnu make
+* zotero API key (create one at https://www.zotero.org/settings/keys)
 
 
 # install + configure
@@ -23,8 +24,12 @@ scale to extremely large bibliographies, especially those that are changed often
 
     pip install -r requirements.txt
 
-* edit `.env` or create `.env.local` to override the settings.  In particular, you will need to override the zotero api
-  key, the zotero search parameters, and the output paths.
+* edit `.env` directly or create `.env.local` to override the settings.  In particular, you will need to override the
+  zotero api key, the zotero search parameters, and the output paths.
+
+If you're querying a group, you can find its id by visiting a url like this:
+
+    https://api.zotero.org/users/1800868/groups?v=3&key=FOOFOOFOO
 
 If you want to write your own templates, copy the tmpl directory somewhere, edit the files, and change `ZTH_TMPL_DIR`
 
