@@ -19,13 +19,12 @@ scale to extremely large bibliographies, especially those that are changed often
 
 # install + configure
 
-* probably should use a virtualenv, then:
-
+You probably should use a virtualenv, then:
 
     pip install -r requirements.txt
 
-* edit `.env` directly or create `.env.local` to override the settings.  In particular, you will need to override the
-  zotero api key, the zotero search parameters, and the output paths.
+Edit `.env` directly or create `.env.local` to override the settings.  In particular, you will need to override the
+zotero api key, the zotero search parameters, and the output paths.
 
 If you're querying a group, you can find its id by visiting a url like this:
 
