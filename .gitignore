@@ -1,3 +1,11 @@
+
+.env.local
+out
+venv
+
+# ide junk
+.idea
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
