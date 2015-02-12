@@ -51,10 +51,10 @@ def emit_html(zotero_json):
         year = int(item["meta"]["parsedDate"][:4]) if "parsedDate" in item["meta"] else "Unknown Publication Date"
         if year and year != current_year:
             current_year = year
-            yield renderer.render_path("tmpl/year.mustache.html", {"year": year})
+            yield renderer.render_path("%s/year.mustache.html" % os.getenv("ZTH_TMPL_DIR"), {"year": year})
 
         # emit entry template
-        yield renderer.render_path("tmpl/entry.mustache.html", item)
+        yield renderer.render_path("%s/entry.mustache.html" % os.getenv("ZTH_TMPL_DIR"), item)
 
 
 def main():
@@ -87,9 +87,9 @@ def main():
         for html_fragment in emit_html(zotero_json):
             out.write(html_fragment.encode("utf-8"))
 
-        css = renderer.render_path("tmpl/bib.mustache.css")
-        js = renderer.render_path("tmpl/bib.mustache.js")
-        scripts = renderer.render_path("tmpl/footer.mustache.html", {"js": js, "css": css})
+        css = renderer.render_path("%s/bib.mustache.css" % os.getenv("ZTH_TMPL_DIR"))
+        js = renderer.render_path("%s/bib.mustache.js" % os.getenv("ZTH_TMPL_DIR"))
+        scripts = renderer.render_path("%s/footer.mustache.html" % os.getenv("ZTH_TMPL_DIR"), {"js": js, "css": css})
         out.write(scripts)
 
 

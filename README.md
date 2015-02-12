@@ -16,21 +16,24 @@ scale to extremely large bibliographies, especially those that are changed often
 * gnu make
 
 
-# install
+# install + configure
 
 * probably should use a virtualenv, then:
+
 
     pip install -r requirements.txt
 
 * edit `.env` or create `.env.local` to override the settings.  In particular, you will need to override the zotero api
   key, the zotero search parameters, and the output paths.
 
+If you want to write your own templates, copy the tmpl directory somewhere, edit the files, and change `ZTH_TMPL_DIR`
+
 
 # run
 
     make
 
-Probably, you'll want to run make in a cron job to keep the .html up to date.
+Probably, you'll want to run `make` in a cron job to keep the output up to date.
 
 If you need to change the settings and re-run:
 
