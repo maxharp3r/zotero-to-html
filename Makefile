@@ -1,5 +1,4 @@
-include .env
-include .env.local
+include .env*
 
 .PHONY: all clean FORCE pip test
 
