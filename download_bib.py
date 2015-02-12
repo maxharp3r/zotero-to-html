@@ -6,10 +6,6 @@
 Zotero has a way of checking if things have changed, which we use. If the bibliography has not changed, then
 we do not write anything to the file.
 
-
-Bibliography links:
-* https://www.zotero.org/groups/grouplens/items
-
 Docs:
 * https://www.zotero.org/support/dev/web_api/v3/basics
 * https://www.zotero.org/styles/
@@ -25,10 +21,9 @@ import requests
 
 # local imports
 import env
-import log
 
-logger = log.get()
-args = None
+logger = env.logger()
+
 LINK_START_REGEX = re.compile(r"start=(\d+)")
 
 
@@ -76,8 +71,7 @@ def get_bib_from_zotero(min_version=0, offset=0):
         "tag": os.getenv("ZTH_SEARCH_TAG"),
         "format": "json",
         "include": "bib,csljson",
-        # see https://www.zotero.org/styles/ for options
-        "style": os.getenv("ZTH_CITEPROC_STYLE", "acm-sigchi-proceedings"),
+        "style": os.getenv("ZTH_CITEPROC_STYLE"),
         "start": offset,
         "limit": 100
     }
@@ -102,6 +96,14 @@ def get_bib_from_zotero(min_version=0, offset=0):
 
 
 def main():
+    parser = argparse.ArgumentParser(description="download bibliography from zotero into citeproc_json file.")
+    parser.add_argument("-o", "--out", dest="outfile", help="output file name")
+    args = parser.parse_args()
+
+    # validate args
+    if not args.outfile:
+        raise ValueError("Requires -o to run.")
+
     logger.info("starting")
     min_version = _read_current_version()
 
@@ -125,12 +127,4 @@ def main():
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="download grouplens bibliography from zotero into citeproc_json file.")
-    parser.add_argument("-o", "--out", dest="outfile", help="output file name")
-    args = parser.parse_args()
-
-    # validate args
-    if not args.outfile:
-        raise ValueError("Requires -o to run.")
-
     main()

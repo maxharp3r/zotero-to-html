@@ -1,7 +1,7 @@
 include .env
 include .env.local
 
-.PHONY: all clean FORCE pip test formatonly deploy
+.PHONY: all clean FORCE pip test
 
 all: $(ZTH_HTML_FILE)
 
@@ -30,14 +30,4 @@ pip:
 
 clean:
 	rm -rf $(ZTH_OUT_DIR)
-
-
-# development tasks
-
-# skip the download step
-formatonly:
-	cat out/grouplens-bib.json | ./bib2html.py --out=out/grouplens-bib.html
-
-deploy:
-	scp out/grouplens-bib.html presspot.cs.umn.edu:/export/scratch/grplens/grplens-wordpress/wp-content/themes/roots/templates/gl-publications-generated.php
 

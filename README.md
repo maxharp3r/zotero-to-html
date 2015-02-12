@@ -2,9 +2,37 @@
 
 turn a zotero collection into an html page
 
+This code first downloads a bibliography using uses the
+[Zotero API](https://www.zotero.org/support/dev/web_api/v3/basics),
+then parses that bibliography into html for display on the web.  It asks Zotero politely
+whether the bibliography has changed since the last run, to keep things lightweight unless things have changed.
+However, this process will rebuild the entire bibliography from scratch each time the version changes, so it may not
+scale to extremely large bibliographies, especially those that are changed often.
+
+
+# requirements
+
+* python 2.7.x (not tested on python 3)
+* gnu make
+
+
 # install
 
-* requires python 2.7.x
-* probably should use a virtualenv -
+* probably should use a virtualenv, then:
 
     pip install -r requirements.txt
+
+* edit `.env` or create `.env.local` to override the settings.  In particular, you will need to override the zotero api
+  key, the zotero search parameters, and the output paths.
+
+
+# run
+
+    make
+
+Probably, you'll want to run make in a cron job to keep the .html up to date.
+
+If you need to change the settings and re-run:
+
+    make clean
+    make
