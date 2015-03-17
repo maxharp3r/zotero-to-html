@@ -65,8 +65,6 @@ def get_bib_from_zotero(min_version=0, offset=0):
     """fetch bibliography as csljson, returns the next offset or None if we're done"""
     url = "https://api.zotero.org/%s/items" % os.environ["ZTH_SEARCH_PREFIX_URI"]
     url_params = {
-        "key": os.getenv("ZTH_API_KEY"),
-        "v": 3,
         "sort": "date",
         "tag": os.getenv("ZTH_SEARCH_TAG"),
         "format": "json",
@@ -74,6 +72,11 @@ def get_bib_from_zotero(min_version=0, offset=0):
         "style": os.getenv("ZTH_CITEPROC_STYLE"),
         "start": offset,
         "limit": 100
+    }
+    url_headers = {
+        "Zotero-API-Version": 3,
+        "Authorization": "Bearer %s" % os.getenv("ZTH_API_KEY"),
+        "If-Modified-Since-Version": str(min_version)
     }
 
     url_headers = {"If-Modified-Since-Version": str(min_version)}
@@ -84,13 +87,16 @@ def get_bib_from_zotero(min_version=0, offset=0):
         logger.info("no change. current version: %d" % min_version)
         next_start = None
         parsed_response = None
-    else:
+    elif r.status_code == 200:
         if offset == 0:
             new_version = r.headers["Last-Modified-Version"]
             logger.info("downloading new version of bibliography. new version: %s" % new_version)
             _write_current_version(new_version)
         next_start = _get_next_start(r.headers["Link"])
         parsed_response = r.json()
+    else:
+        logger.error("error: %s" % r.status_code)
+        exit(1)
 
     return next_start, parsed_response
 
