@@ -1,0 +1,16 @@
+<li class="bib-entry" id="entry-{{ key }}">
+  <div class="bib-entry-summary">
+    {{{ bibclean }}}
+    <button type="button" class="btn btn-link btn-sm" onclick="showMore('{{ key }}')">more...</button>
+  </div>
+  <div class="bib-entry-more" style="display: none;">
+    <div class="bib-entry-abstract">
+      {{ csljson.abstract }}
+    </div>
+    <ul class="bib-entry-links">
+      {{#more}}
+        <li>{{{.}}}</li>
+      {{/more}}
+    </ul>
+  </div>
+</li>
