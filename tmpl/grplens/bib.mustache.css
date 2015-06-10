@@ -18,3 +18,18 @@
 input.search {
     margin-bottom: 2em;
 }
+
+.zth-modal .modal-body {
+    margin-top: 2em;
+}
+@media screen and (min-width: 768px) and (max-width: 899px) {
+    .modal-lg {
+        width: auto !important;
+    }
+}
+
+@media screen and (min-width: 900px) {
+    .modal-lg {
+        width: 900px;
+    }
+}

@@ -1,16 +1,32 @@
 <li class="bib-entry" id="entry-{{ key }}">
   <div class="bib-entry-summary">
     {{{ bibclean }}}
-    <button type="button" class="btn btn-link btn-sm" onclick="showMore('{{ key }}')">more...</button>
+    <button type="button" class="btn btn-link btn-sm" data-toggle="modal" data-target="#entry-{{key }} > .modal">more...</button>
   </div>
-  <div class="bib-entry-more" style="display: none;">
-    <div class="bib-entry-abstract">
-      {{ csljson.abstract }}
+
+  <div class="zth-modal modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-body">
+          <p class="lead">
+            {{{ bibclean }}}
+          </p>
+          <p><strong>abstract:</strong></p>
+          <p>
+            {{ csljson.abstract }}
+          </p>
+          <p><strong>links and identifiers:</strong></p>
+          <ul class="bib-entry-links">
+            {{#more}}
+            <li>{{{.}}}</li>
+            {{/more}}
+          </ul>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+      </div>
     </div>
-    <ul class="bib-entry-links">
-      {{#more}}
-        <li>{{{.}}}</li>
-      {{/more}}
-    </ul>
   </div>
+
 </li>
