@@ -4,7 +4,7 @@
 }
 
 .bib-entry {
-    margin-bottom: .5em;
+    margin-bottom: 2em;
 }
 
 .bib-entry-more {
@@ -13,4 +13,8 @@
 
 .bib-entry-abstract {
     margin-bottom: .5em;
+}
+
+input.search {
+    margin-bottom: 2em;
 }

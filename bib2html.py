@@ -22,7 +22,10 @@ HYPERLINK_REGEX = re.compile(r"(https?://[^ ]+)")
 def get_clean_bib(bib):
     """extract the html citation, remove the html boilerplate that zotero returns"""
     d = PyQuery(bib)
-    return d("div.csl-right-inline").html()
+
+    # print d("div.csl-right-inline").html()
+
+    return hyperlink_string(d("div.csl-right-inline").html())
 
 
 def get_clean_zotero_link(links):
@@ -84,15 +87,13 @@ def main():
         item["more"] = [hyperlink_string(s) for s in item["more"]]
 
     with open(args.outfile, "w") as out:
-        out.write(renderer.render_path("%s/header.mustache.html" % os.getenv("ZTH_TMPL_DIR")))
-
-        for html_fragment in emit_html(zotero_json):
-            out.write(html_fragment.encode("utf-8"))
-
         css = renderer.render_path("%s/bib.mustache.css" % os.getenv("ZTH_TMPL_DIR"))
         js = renderer.render_path("%s/bib.mustache.js" % os.getenv("ZTH_TMPL_DIR"))
-        scripts = renderer.render_path("%s/footer.mustache.html" % os.getenv("ZTH_TMPL_DIR"), {"js": js, "css": css})
-        out.write(scripts)
+
+        out.write(renderer.render_path("%s/header.mustache.html" % os.getenv("ZTH_TMPL_DIR"), {"css": css}))
+        for html_fragment in emit_html(zotero_json):
+            out.write(html_fragment.encode("utf-8"))
+        out.write(renderer.render_path("%s/footer.mustache.html" % os.getenv("ZTH_TMPL_DIR"), {"js": js}))
 
 
 if __name__ == "__main__":

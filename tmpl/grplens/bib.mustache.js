@@ -5,8 +5,10 @@ var showMore = function(key) {
 
 $(document).ready(function() {
 
-  // list.js
+  // initialize list.js
   var pubList = new List('zth-pubs', {
+    // indexAsync: true,
+    page: 2000,
     valueNames: ['bib-entry-summary']
   });
 
