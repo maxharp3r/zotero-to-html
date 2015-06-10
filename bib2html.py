@@ -84,6 +84,8 @@ def main():
         item["more"] = [hyperlink_string(s) for s in item["more"]]
 
     with open(args.outfile, "w") as out:
+        out.write(renderer.render_path("%s/header.mustache.html" % os.getenv("ZTH_TMPL_DIR")))
+
         for html_fragment in emit_html(zotero_json):
             out.write(html_fragment.encode("utf-8"))
 
