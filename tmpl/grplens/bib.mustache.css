@@ -7,6 +7,11 @@
     margin-bottom: 2em;
 }
 
+.bib-entry > .bib-entry-summary a {
+    color: inherit;
+    text-decoration: none;
+}
+
 .bib-entry-more {
     margin: 1em 0 1em 3em;
 }
