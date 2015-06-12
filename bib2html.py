@@ -3,6 +3,7 @@
 
 # global imports
 import argparse
+from HTMLParser import HTMLParser
 import json
 import os
 from pyquery import PyQuery
@@ -14,6 +15,7 @@ import sys
 import env
 
 logger = env.logger()
+parser = HTMLParser()
 renderer = pystache.Renderer(file_encoding="utf-8")
 
 HYPERLINK_REGEX = re.compile(r"(https?://[^ ]+)")
@@ -22,10 +24,12 @@ HYPERLINK_REGEX = re.compile(r"(https?://[^ ]+)")
 def get_clean_bib(bib):
     """extract the html citation, remove the html boilerplate that zotero returns"""
     d = PyQuery(bib)
+    div = d("div.csl-right-inline").html()
 
-    # print d("div.csl-right-inline").html()
+    # zotero keeps the html escaped in the return value
+    div = parser.unescape(div)
 
-    return hyperlink_string(d("div.csl-right-inline").html())
+    return hyperlink_string(div)
 
 
 def get_clean_zotero_link(links):
