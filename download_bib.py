@@ -24,6 +24,7 @@ import env
 
 logger = env.logger()
 
+REL_NEXT_REGEX = re.compile(r'rel="next"')
 LINK_START_REGEX = re.compile(r"start=(\d+)")
 
 
@@ -46,18 +47,22 @@ def _get_next_start(links_header):
     """parse the zotero `Link` header into a new start value, or None if we're done.
 
     >>> link = '<https://api.zotero.org/groups/14159/items?include=bib%2Ccsljson&limit=100&sort=date&start=100&style=acm-sigchi-proceedings&v=3>; rel="next", <https://api.zotero.org/groups/14159/items?include=bib%2Ccsljson&limit=100&sort=date&start=400&style=acm-sigchi-proceedings&v=3>; rel="last", <https://www.zotero.org/groups/14159/items>; rel="alternate"'
-    >>> link_without_next = '<https://api.zotero.org/groups/14159/items?include=bib%2Ccsljson&limit=100&sort=date&style=acm-sigchi-proceedings&v=3>; rel="first", <https://www.zotero.org/groups/14159/items>; rel="alternate"'
     >>> _get_next_start(link)
     100
+    >>> link_without_next = '<https://api.zotero.org/groups/14159/items?include=bib%2Ccsljson&limit=100&sort=date&style=acm-sigchi-proceedings&v=3>; rel="first", <https://www.zotero.org/groups/14159/items>; rel="alternate"'
     >>> _get_next_start(link_without_next) is None
     True
+    >>> link_full = '<https://api.zotero.org/groups/14159/items?include=bib%2Ccsljson&limit=100&sort=date&style=acm-sigchi-proceedings&tag=grouplens.org>; rel="first", <https://api.zotero.org/groups/14159/items?include=bib%2Ccsljson&limit=100&sort=date&start=100&style=acm-sigchi-proceedings&tag=grouplens.org>; rel="prev", <https://api.zotero.org/groups/14159/items?include=bib%2Ccsljson&limit=100&sort=date&start=300&style=acm-sigchi-proceedings&tag=grouplens.org>; rel="next", <https://api.zotero.org/groups/14159/items?include=bib%2Ccsljson&limit=100&sort=date&start=300&style=acm-sigchi-proceedings&tag=grouplens.org>; rel="last", <https://www.zotero.org/groups/14159/items>; rel="alternate"'
+    >>> _get_next_start(link_full)
+    300
     """
     if links_header is not None:
-        parts = links_header.split('; rel="next"')
-        if len(parts) >= 2:
-            match = LINK_START_REGEX.search(parts[0])
-            if match and len(match.groups()) == 1:
-                return int(match.groups()[0])
+        parts = links_header.split(', ')
+        for part in parts:
+            if REL_NEXT_REGEX.search(part):
+                match = LINK_START_REGEX.search(part)
+                if match and len(match.groups()) == 1:
+                    return int(match.groups()[0])
     return None
 
 
@@ -78,8 +83,6 @@ def get_bib_from_zotero(min_version=0, offset=0):
         "Authorization": "Bearer %s" % os.getenv("ZTH_API_KEY"),
         "If-Modified-Since-Version": str(min_version)
     }
-
-    url_headers = {"If-Modified-Since-Version": str(min_version)}
     r = requests.get(url, params=url_params, headers=url_headers)
 
     if r.status_code == 304:
