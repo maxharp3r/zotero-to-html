@@ -27,6 +27,8 @@ logger = env.logger()
 REL_NEXT_REGEX = re.compile(r'rel="next"')
 LINK_START_REGEX = re.compile(r"start=(\d+)")
 
+new_version = None
+
 
 def _write_current_version(version_id):
     with open(os.getenv("ZTH_VERSION_FILE"), "w") as version_file:
@@ -68,6 +70,7 @@ def _get_next_start(links_header):
 
 def get_bib_from_zotero(min_version=0, offset=0):
     """fetch bibliography as csljson, returns the next offset or None if we're done"""
+    global new_version
     url = "https://api.zotero.org/%s/items" % os.environ["ZTH_SEARCH_PREFIX_URI"]
     url_params = {
         "sort": "date",
@@ -94,7 +97,6 @@ def get_bib_from_zotero(min_version=0, offset=0):
         if offset == 0:
             new_version = r.headers["Last-Modified-Version"]
             logger.info("downloading new version of bibliography. new version: %s" % new_version)
-            _write_current_version(new_version)
         next_start = _get_next_start(r.headers["Link"])
         parsed_response = r.json()
     else:
@@ -131,6 +133,10 @@ def main():
     if len(bib_entries_from_zotero) > 0:
         with open(args.outfile, "w") as out:
             json.dump(bib_entries_from_zotero, out, indent=2)
+
+    # write the new version number as the last step (only increment in the absence of failures)
+    if new_version is not None:
+        _write_current_version(new_version)
 
     exit(0)
 
