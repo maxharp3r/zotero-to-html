@@ -83,9 +83,12 @@ def main():
         # links
         note = item["csljson"]["note"] if "note" in item["csljson"] else ""
         item["more"] = split_text_to_list(note)
-        if "URL" in item["csljson"]:
+        if "URL" in item["csljson"] \
+                and os.getenv("ZTH_INCLUDE_URL_IN_MORE") == "True":
             item["more"].append(item["csljson"]["URL"])
-        item["more"].append("zotero: " + get_clean_zotero_link(item["links"]))
+
+        if os.getenv("ZTH_INCLUDE_ZOTERO_LINK_IN_MORE") == "True":
+            item["more"].append("zotero: " + get_clean_zotero_link(item["links"]))
 
         # add hyperlinks
         item["more"] = [hyperlink_string(s) for s in item["more"]]
